@@ -270,12 +270,13 @@ def make_train_input_tensors(dataset, dataset_name,
 
     # Fetch and update params
     params = PARAMS[dataset_name].copy()
+    
     if update_params is not None:
         params.update(update_params)
     # Add filename extension if necessary
     if not save_path.endswith('.h5'):
         save_path = save_path + '.h5'
-
+    
     # unpack params
     spk_field = params['spk_field']
     hospk_field = params['hospk_field']
@@ -305,6 +306,16 @@ def make_train_input_tensors(dataset, dataset_name,
         'train_spikes_heldin': train_dict[spk_field],
         'train_spikes_heldout': train_dict[hospk_field],
     }
+    
+    if 'maze_id_field' in params: 
+        maze_id_field = params['maze_id_field']
+        data_dict[maze_id_field] = dataset.trial_info[trial_mask][maze_id_field].to_numpy().astype('int')
+    if 'trial_type_field' in params: 
+        trial_type_field = params['trial_type_field']
+        data_dict[trial_type_field] = dataset.trial_info[trial_mask][trial_type_field].to_numpy().astype('int')
+    if 'trial_version_field' in params: 
+        trial_version_field = params['trial_version_field']
+        data_dict[trial_version_field] = dataset.trial_info[trial_mask][trial_version_field].to_numpy().astype('int')
 
     # Add behavior data if necessary
     if include_behavior:
@@ -443,6 +454,16 @@ def make_eval_input_tensors(dataset, dataset_name,
         data_dict = {
             'eval_spikes_heldin': eval_dict[spk_field],
         }
+        
+    if 'maze_id_field' in params: 
+        maze_id_field = params['maze_id_field']
+        data_dict[maze_id_field] = dataset.trial_info[trial_mask][maze_id_field].to_numpy().astype('int')
+    if 'trial_type_field' in params: 
+        trial_type_field = params['trial_type_field']
+        data_dict[trial_type_field] = dataset.trial_info[trial_mask][trial_type_field].to_numpy().astype('int')
+    if 'trial_version_field' in params: 
+        trial_version_field = params['trial_version_field']
+        data_dict[trial_version_field] = dataset.trial_info[trial_mask][trial_version_field].to_numpy().astype('int')
 
     # Delete jitter column
     if jitter is not None:
